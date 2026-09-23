@@ -6,6 +6,7 @@
 -- 5.Look for inconsistent data and errors/Standardization
 -- 6.Remove unecessary rows and columns
 -- 7.Create derived columns
+-- Check for fairness
 -- 8.EDA
 -- 9.Create views for further analysis and visualization
 
@@ -57,6 +58,27 @@ FROM ai_impact_jobs_copy;
 SELECT *
 FROM ai_impact_jobs_copy;
 
+SELECT *
+FROM ai_impact_jobs_copy
+WHERE Age <0 OR Age>100;
+
+SELECT *
+FROM ai_impact_jobs_copy
+WHERE Years_of_Experience<0 OR Years_of_Experience>100;
+
+SELECT *
+FROM ai_impact_jobs_copy
+WHERE Routine_Task_Percentage<0 OR Routine_Task_Percentage>100;
+
+SELECT *
+FROM ai_impact_jobs_copy
+WHERE Tasks_Automated_Percentage<0 OR Tasks_Automated_Percentage>100;
+
+SELECT *
+FROM ai_impact_jobs_copy
+WHERE Layoff_Risk<0 OR Layoff_Risk>100;
+
+
 SELECT DISTINCT Job_Role
 FROM ai_impact_jobs_copy
 ORDER BY Job_Role ;
@@ -81,4 +103,40 @@ SELECT DISTINCT Layoff_Risk
 FROM ai_impact_jobs_copy
 ORDER BY Layoff_Risk;
 
--- No inconsistnet categories.
+-- No inconsistnet categories and numerical ranges.
+
+-- Checking for fairness
+SELECT *
+FROM ai_impact_jobs_copy;
+
+SELECT 
+	Industry,
+    COUNT(*) AS employee_count,
+    ROUND(COUNT(*)*100/(SELECT COUNT(*) FROM ai_impact_jobs_copy),2) AS percent
+FROM ai_impact_jobs_copy
+GROUP BY Industry
+ORDER BY employee_count;
+
+SELECT
+    Job_role,
+    COUNT(*) AS employee_count,
+    ROUND(COUNT(*)*100/(SELECT COUNT(*) FROM ai_impact_jobs_copy),2) AS percent
+FROM ai_impact_jobs_copy
+GROUP BY Job_role
+ORDER BY employee_count DESC;
+
+SELECT
+    Job_Level,
+    COUNT(*) AS employee_count,
+    ROUND(COUNT(*)*100/(SELECT COUNT(*) FROM ai_impact_jobs_copy),2) AS percent,
+    ROUND(AVG(AI_Training_Hours), 2) AS avg_training_hours
+FROM ai_impact_jobs_copy
+GROUP BY Job_Level
+ORDER BY employee_count DESC;
+
+
+
+/*Fairness Check:
+Potential representation imbalances were assessed across education, job level, job role, and industry.
+Differences in group sizes were noted and 
+considered when interpreting the analysis.*/
